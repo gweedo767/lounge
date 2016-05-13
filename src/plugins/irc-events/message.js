@@ -67,14 +67,6 @@ module.exports = function(irc, network) {
 			highlight = network.highlightRegex.test(data.message);
 		}
 
-		if (!self && chan.id !== client.activeChannel) {
-			chan.unread++;
-
-			if (highlight) {
-				chan.highlight = true;
-			}
-		}
-
 		var msg = new Msg({
 			type: data.type,
 			time: data.time,
@@ -85,5 +77,17 @@ module.exports = function(irc, network) {
 			highlight: highlight
 		});
 		chan.pushMessage(client, msg);
+
+		if (!self && chan.id !== client.activeChannel) {
+			chan.unread++;
+
+			if (!chan.firstUnread) {
+				chan.firstUnread = msg.id;
+			}
+
+			if (highlight) {
+				chan.highlight = true;
+			}
+		}
 	}
 };

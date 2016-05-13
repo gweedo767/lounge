@@ -272,6 +272,10 @@ $(function() {
 	function renderChannelMessages(data) {
 		var documentFragment = buildChannelMessages(data.id, data.messages);
 		chat.find("#chan-" + data.id + " .messages").append(documentFragment);
+
+		if (data.firstUnread > 0) {
+			$("#msg-" + data.firstUnread).addClass("first-unread");
+		}
 	}
 
 	function renderChannelUsers(data) {

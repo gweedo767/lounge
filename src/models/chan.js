@@ -19,6 +19,7 @@ function Chan(attr) {
 		name: "",
 		topic: "",
 		type: Chan.Type.CHANNEL,
+		firstUnread: 0,
 		unread: 0,
 		highlight: false,
 		users: []
