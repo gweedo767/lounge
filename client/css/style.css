@@ -752,8 +752,10 @@ button,
 	color: #50a656 !important;
 }
 
-#chat .first-unread {
-	background: red;
+#chat .first-unread .time,
+#chat .first-unread .from,
+#chat .first-unread .text {
+	border-bottom: 2px solid red;
 }
 
 #chat .text {

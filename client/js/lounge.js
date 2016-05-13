@@ -271,10 +271,21 @@ $(function() {
 
 	function renderChannelMessages(data) {
 		var documentFragment = buildChannelMessages(data.id, data.messages);
-		chat.find("#chan-" + data.id + " .messages").append(documentFragment);
+		var channel = chat.find("#chan-" + data.id + " .messages").append(documentFragment);
 
 		if (data.firstUnread > 0) {
-			$("#msg-" + data.firstUnread).addClass("first-unread");
+			var first = $("#msg-" + data.firstUnread);
+			var oneBefore = first.prev();
+
+			if (oneBefore.length) {
+				first = oneBefore;
+			}
+
+			first.addClass("first-unread");
+		} else {
+			channel
+				.find(".msg:last-child")
+				.addClass("first-unread");
 		}
 	}
 
@@ -682,10 +693,20 @@ $(function() {
 		}
 
 		viewport.removeClass("lt");
-		$("#windows .active")
+		var lastActive = $("#windows .active");
+
+		lastActive
 			.removeClass("active")
 			.find(".chat")
 			.unsticky();
+
+		lastActive
+			.find(".first-unread")
+			.removeClass("first-unread");
+
+		lastActive
+			.find(".msg:last-child")
+			.addClass("first-unread");
 
 		var chan = $(target)
 			.addClass("active")
