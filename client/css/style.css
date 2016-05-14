@@ -752,10 +752,12 @@ button,
 	color: #50a656 !important;
 }
 
-#chat .first-unread .time,
-#chat .first-unread .from,
-#chat .first-unread .text {
-	border-bottom: 2px solid red;
+#chat .first-unread:not(:last-child):after {
+	content: " ";
+	position: absolute;
+	width: 100%;
+	left: 0;
+	border-bottom: 1px solid #428bca;
 }
 
 #chat .text {
