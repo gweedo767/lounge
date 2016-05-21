@@ -998,13 +998,21 @@ $(function() {
 					words.push(self.data("title"));
 				}
 			});
-
-		return $.grep(
+		
+		var returnVal = $.grep(
 			words,
 			function(w) {
 				return !w.toLowerCase().indexOf(word.toLowerCase());
 			}
 		);
+		
+		for (var i in returnVal) {
+			if (input.val() === word && nicks.indexOf(returnVal[i]) >= 0) {
+				returnVal[i] = returnVal[i] + ": ";
+			}
+		}
+		
+		return returnVal;
 	}
 
 	function confirmExit() {
