@@ -7,6 +7,8 @@ $(function() {
 		"/deop",
 		"/devoice",
 		"/disconnect",
+		"/ignore",
+		"/ignorelist",
 		"/invite",
 		"/join",
 		"/kick",
@@ -28,6 +30,12 @@ $(function() {
 		"/voice",
 		"/whois"
 	];
+
+	var ignoredNicks = [];
+
+	//load ignoredNicks from local storage
+	ignoredNicks = window.localStorage.getItem("ignoredNicks").split(' ');
+	console.log('ignored nicks are', ignoredNicks);
 
 	var sidebar = $("#sidebar, #footer");
 	var chat = $("#chat");
@@ -298,6 +306,9 @@ $(function() {
 
 	socket.on("msg", function(data) {
 		var msg = buildChatMessage(data);
+
+		if(ignoredNicks.indexOf(data.msg.from) >= 0) return;
+
 		var target = "#chan-" + data.chan;
 		chat.find(target + " .messages")
 			.append(msg)
@@ -601,8 +612,29 @@ $(function() {
 		e.preventDefault();
 		var text = input.val();
 		input.val("");
+
 		if (text.indexOf("/clear") === 0) {
 			clear();
+			return;
+		}
+		if (text.indexOf("/ignorelist") === 0) {
+			alert(ignoredNicks.join(", "));
+			return;
+		}
+		if (text.indexOf("/ignore") === 0) {
+			var ignoreNick = text.substring(8,text.length);
+
+			if(ignoredNicks.indexOf(ignoreNick) >= 0) {
+				//stop ignoring the nick
+				ignoredNicks.splice(ignoredNicks.indexOf(ignoreNick),1);
+			} else {
+				//ignore this nick
+				ignoredNicks.push(ignoreNick);
+			}
+
+			//store the new ignore cookie
+			window.localStorage.setItem("ignoredNicks", ignoredNicks.join(' '));
+
 			return;
 		}
 		socket.emit("input", {
