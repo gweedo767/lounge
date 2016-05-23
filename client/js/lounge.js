@@ -34,8 +34,11 @@ $(function() {
 	var ignoredNicks = [];
 
 	//load ignoredNicks from local storage
-	ignoredNicks = window.localStorage.getItem("ignoredNicks").split(' ');
-	console.log('ignored nicks are', ignoredNicks);
+	var storedIgnoredNicks = window.localStorage.getItem("ignoredNicks");
+	if(storedIgnoredNicks !== null && storedIgnoredNicks !== undefined) {
+		ignoredNicks = window.localStorage.getItem("ignoredNicks").split(' ');
+		console.log('ignored nicks are', ignoredNicks);
+	}
 
 	var sidebar = $("#sidebar, #footer");
 	var chat = $("#chat");
