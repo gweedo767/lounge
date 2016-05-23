@@ -1130,6 +1130,7 @@ $(function() {
 	}
 
 	function setNick(nick) {
+		nick = "Say";
 		var width = $("#nick")
 			.html(nick)
 			.outerWidth(true);
