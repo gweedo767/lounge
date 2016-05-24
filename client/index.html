@@ -13,7 +13,7 @@
 
 	<title>The Lounge</title>
 
-	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/style.css">
 	<link id="theme" rel="stylesheet" href="<%= theme %>">
 	<style id="user-specified-css"></style>
@@ -24,7 +24,6 @@
 
 	</head>
 	<body class="<%= public ? "public" : "" %>">
-
 	<div id="wrap">
 	<div id="viewport">
 		<aside id="sidebar" class="tse-scrollable">
@@ -311,12 +310,44 @@
 					<div class="input">
 						<label for="input" id="nick"></label>
 						<button id="submit" type="submit" title="Send" aria-label="Send message"></button>
+						<button id="upload" type="button" title="Upload" aria-label="Upload image" data-toggle="modal" data-target="#uploadModal"></button>
 						<textarea id="input" class="mousetrap"></textarea>
 					</div>
 				</div>
 			</form>
 		</div>
 	</div>
+	</div>
+
+	<div id="uploadModal" class="modal fade" role="dialog">
+
+		<!-- imgur upload modal -->
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Upload image to imgur</h4>
+				</div>
+				<div class="modal-body">
+					<input type="file" id="localImage">
+					<div id="imageUploading" style="display: none;">
+						Image is currently uploading. Please wait.
+					</div>
+					<div id="imageUploaded" style="display: none;">
+						Image upload complete<br>
+						<img id="imgurUploadOut" width="100"><br>
+						<p id="imgurLink"></p>
+						<button type="button" class="btn btn-default" id="shareUploadedImage" data-dismiss="modal">Post Image</button>
+					</div>
+					<div id="uploadError" style="display: none;">
+						There was an error uploading your file.  Please try again.
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<div id="context-menu-container">
@@ -327,6 +358,7 @@
 	<script src="js/libs.min.js"></script>
 	<script src="js/lounge.templates.js"></script>
 	<script src="js/lounge.js"></script>
+	<script src="js/bootstrap.min.js"></script>
 
 	</body>
 </html>

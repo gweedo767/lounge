@@ -646,6 +646,47 @@ $(function() {
 		});
 	});
 
+	$("#localImage").change(function() {
+		var reader = new FileReader();
+                reader.onload = function(e) {
+			$("#localImage").hide();
+
+			//show uploading message
+			$("#imageUploading").show();
+			$("#uploadError").hide();
+
+			var data = e.target.result.substr(e.target.result.indexOf(",") + 1, e.target.result.length);
+			$("#image_preview").attr("src", e.target.result);
+			$.ajax({
+				url: 'https://api.imgur.com/3/image',
+				headers: {
+					'Authorization': 'Client-ID 43fc3f4729d7cf9'
+				},
+				type: 'POST',
+				data: {
+					'image': data,
+					'type': 'base64'
+				},
+				success: function(response) {
+					$("#imageUploading").hide();
+					$("#imageUploaded").show();
+					$("#imgurLink").html(response.data.link);
+					$("#imgurUploadOut").attr('src',response.data.link);
+				}, error: function(data) {
+					$("#imageUploading").hide();
+					$("#uploadError").show();
+					console.error(data);
+				}
+			});
+                };
+                reader.readAsDataURL(this.files[0]);
+	});
+
+	$("#shareUploadedImage").on("click", function() {
+		//share current imgur image
+		$("#input").val($("#imgurLink").html());
+	});
+
 	chat.on("click", ".inline-channel", function() {
 		var chan = $(".network")
 			.find(".chan.active")

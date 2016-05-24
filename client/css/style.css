@@ -1241,12 +1241,30 @@ button,
 	width: 34px;
 }
 
+#form #upload {
+	color: #9ca5b4;
+	height: 34px;
+	line-height: 34px;
+	position: absolute;
+	right: 24px;
+	transition: opacity .3s;
+	width: 34px;
+}
+
 #form #submit:before {
 	font: 14px FontAwesome;
 	content: "\f1d8";
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
+
+#form #upload:before {
+	font: 14px FontAwesome;
+	content: "\f0ee";
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
 
 #form #submit:hover {
 	opacity: .6;
