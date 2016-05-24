@@ -168,6 +168,10 @@ $(function() {
 			);
 			channels.forEach(renderChannel);
 			confirmExit();
+
+			if (sidebar.find(".highlight").length) {
+				toggleFaviconNotification(true);
+			}
 		}
 
 		if (data.token) {
