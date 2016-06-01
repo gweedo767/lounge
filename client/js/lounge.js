@@ -618,12 +618,18 @@ $(function() {
 	form.on("submit", function(e) {
 		e.preventDefault();
 		var text = input.val();
+
+		if (text.length === 0) {
+			return;
+		}
+
 		input.val("");
 
 		if (text.indexOf("/clear") === 0) {
 			clear();
 			return;
 		}
+
 		if (text.indexOf("/ignorelist") === 0) {
 			alert(ignoredNicks.join(", "));
 			return;
@@ -644,6 +650,7 @@ $(function() {
 
 			return;
 		}
+
 		socket.emit("input", {
 			target: chat.data("id"),
 			text: text
