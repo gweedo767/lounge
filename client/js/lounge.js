@@ -840,6 +840,13 @@ $(function() {
 	sidebar.on("click", ".networkCollapse", function() {
 		var parent = $(this).parent().parent().parent();
 		$(parent).find(".channel").fadeToggle();
+		if($(this).hasClass("glyphicon-minus")) {
+			$(this).removeClass("glyphicon-minus");
+			$(this).addClass("glyphicon-plus");
+		} else {
+			$(this).removeClass("glyphicon-plus");
+			$(this).addClass("glyphicon-minus");
+		}
 	});
 
 	contextMenu.on("click", ".context-menu-item", function() {
