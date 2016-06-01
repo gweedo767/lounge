@@ -696,6 +696,17 @@ $(function() {
 	$("#shareUploadedImage").on("click", function() {
 		//share current imgur image
 		$("#input").val($("#imgurLink").html());
+		$("#imageUploading").hide();
+		$("#imageUploaded").hide();
+		$("#uploadError").hide();
+		$("#localImage").show();
+	});
+
+	$("#dontShareUploadedImage").on("click", function() {
+                $("#imageUploading").hide();
+                $("#imageUploaded").hide();
+                $("#uploadError").hide();
+                $("#localImage").show();
 	});
 
 	chat.on("click", ".inline-channel", function() {
