@@ -837,6 +837,11 @@ $(function() {
 		return false;
 	});
 
+	sidebar.on("click", ".networkCollapse", function() {
+		var parent = $(this).parent().parent().parent();
+		$(parent).find(".channel").fadeToggle();
+	});
+
 	contextMenu.on("click", ".context-menu-item", function() {
 		switch ($(this).data("action")) {
 		case "close":
