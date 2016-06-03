@@ -90,6 +90,11 @@ body {
 	opacity: .5;
 }
 
+#form #input::-webkit-input-placeholder {
+	color: white;
+	opacity: .3;
+}
+
 /* Borders */
 #chat .from,
 #windows .header,
