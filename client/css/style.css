@@ -1719,7 +1719,7 @@ button,
 	}
 
 	#chat .time {
-		display: none;
+		display: inline;
 	}
 }
 
