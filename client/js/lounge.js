@@ -613,6 +613,11 @@ $(function() {
 		.history()
 		.tab(complete, {hint: false});
 
+	//chrome on android isn't submitting keypresses, makes tying to tab complete unique
+	input.bind("input", function() {
+		complete($("#input").val());
+	});
+
 	var form = $("#form");
 
 	form.on("submit", function(e) {
@@ -624,6 +629,7 @@ $(function() {
 		}
 
 		input.val("");
+		$("#mobileAutoCompleteHolder").html("");
 
 		if (text.indexOf("/clear") === 0) {
 			clear();
@@ -707,6 +713,25 @@ $(function() {
                 $("#imageUploaded").hide();
                 $("#uploadError").hide();
                 $("#localImage").show();
+	});
+
+	$("#mobileAutoCompleteHolder").on("click", ".autoCompleteButton", function() {
+		var term = $(this).attr("completeterm");
+		console.log(term);
+		//$("#input").val($("#input").val() + term);
+		console.log("current val:", $("#input").val());
+		var words = $("#input").val().split(" ");
+		console.log("words",words);
+		words.pop(); //remove word we are completing
+
+		if(words.length > 0) {
+			term = " " + term + " ";
+		}
+
+		$("#input").val(words.join(" ") + term);
+
+		$("#input").focus();
+		$("#mobileAutoCompleteHolder").html("");
 	});
 
 	chat.on("click", ".inline-channel", function() {
@@ -1121,6 +1146,17 @@ $(function() {
 			}
 		}
 		
+		if(returnVal.length > 0) {
+			//build mobile auto complete selector
+			var buttonHtml = "";
+			for(var i=0; i<returnVal.length; i++) {
+				buttonHtml += '<button type="button" class="btn btn-primary btn-sm autoCompleteButton" completeTerm="' + returnVal[i] + '">' + returnVal[i] + '</button> '
+			}
+			$("#mobileAutoCompleteHolder").html(buttonHtml);
+		} else {
+			$("#mobileAutoCompleteHolder").html("");
+		}
+
 		return returnVal;
 	}
 

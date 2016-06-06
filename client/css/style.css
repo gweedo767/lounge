@@ -1681,6 +1681,15 @@ button,
 	#chat .title:before {
 		display: none;
 	}
+
+	#mobileAutoCompleteHolder {
+		position: relative;
+		top: -80px;
+		z-index: 1000;
+		overflow-x: auto;
+		width: 100%;
+		white-space: nowrap;
+	}
 }
 
 @media (max-width: 479px) {
