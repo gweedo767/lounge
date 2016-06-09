@@ -13,13 +13,18 @@ environment:
 install:
   - ps: Install-Product node $env:nodejs_version
   - npm install
+  - npm install mocha-appveyor-reporter
+  - echo --reporter mocha-appveyor-reporter >> test/mocha.opts
 
 test_script:
   - node --version
   - npm --version
-  - npm run test:mocha
-  - npm run lint:js
-  - npm run lint:css
+  - npm test
+
+# cache npm modules
+cache:
+  - node_modules
+  - '%APPDATA%\npm-cache'
 
 # Don't actually build
 build: off

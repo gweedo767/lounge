@@ -1,7 +1,10 @@
 {
   "name": "thelounge",
   "description": "The self-hosted Web IRC client",
-  "version": "2.0.0-pre.1",
+  "version": "2.0.0-pre.2",
+  "publishConfig": {
+    "tag": "next"
+  },
   "preferGlobal": true,
   "bin": {
     "lounge": "index.js"
@@ -13,12 +16,13 @@
   "homepage": "https://thelounge.github.io/",
   "scripts": {
     "start": "node index",
-    "build": "npm run build:grunt && npm run build:handlebars",
+    "build": "npm run build:font-awesome && npm run build:grunt && npm run build:handlebars",
+    "build:font-awesome": "node scripts/build-fontawesome.js",
     "build:grunt": "grunt",
     "build:handlebars": "handlebars client/views/ -e tpl -f client/js/lounge.templates.js",
-    "test": "(npm run test:mocha || true) && npm run lint",
+    "test": "npm-run-all -c test:mocha lint",
     "test:mocha": "mocha -r test/fixtures/env.js test/**/*.js",
-    "lint": "(npm run lint:js || true) && (npm run lint:css || true)",
+    "lint": "npm-run-all -c lint:js lint:css",
     "lint:js": "eslint .",
     "lint:css": "stylelint \"**/*.css\"",
     "prepublish": "npm run build"
@@ -42,6 +46,7 @@
     "commander": "2.9.0",
     "event-stream": "3.3.2",
     "express": "4.13.4",
+    "fs-extra": "0.30.0",
     "irc-framework": "2.0.0",
     "lodash": "4.11.2",
     "mkdirp": "0.5.1",
@@ -56,12 +61,14 @@
   },
   "devDependencies": {
     "chai": "3.5.0",
-    "eslint": "2.8.0",
+    "eslint": "2.11.1",
+    "font-awesome": "4.6.3",
     "grunt": "1.0.1",
     "grunt-contrib-uglify": "1.0.1",
     "grunt-contrib-watch": "1.0.0",
     "handlebars": "4.0.5",
     "mocha": "2.4.5",
+    "npm-run-all": "2.1.1",
     "stylelint": "6.2.2"
   }
 }
