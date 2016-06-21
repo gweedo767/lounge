@@ -9,6 +9,7 @@ $(function() {
 		"/deop",
 		"/devoice",
 		"/dickbutt",
+		"/dickbuttstats",
 		"/disconnect",
 		"/ignore",
 		"/ignorelist",
@@ -669,11 +670,33 @@ $(function() {
 			return;
 		}
 
+		if (text.indexOf("/dickbuttstats") === 0) {
+			$.ajax({
+				url: 'https://api-ssl.bitly.com/v3/user/clicks?access_token=baaead629b85afc6ebdbce575fdaf50eed602b4e',
+				success: function(response) {
+					var dickButtClicks = 0;
+
+					for(var i=0; i<response.data.clicks.length; i++) {
+						dickButtClicks += response.data.clicks[i].clicks;
+					}
+					text = dickButtClicks + ' dickbutt clicks in the past ' + response.data.days + ' days.';
+
+					socket.emit("input", {
+						target: chat.data("id"),
+						text: text
+					});
+				}, error: function(data) {
+					console.error(data);
+				}
+			});
+
+			return;
+		}
+
 		if (text.indexOf("/dickbutt") === 0) {
 			$.ajax({
 				url: 'https://api-ssl.bitly.com/v3/shorten?access_token=baaead629b85afc6ebdbce575fdaf50eed602b4e&longUrl=http%3A%2F%2Fi.kinja-img.com/gawker-media/image/upload/m5g6imznbymcxkbpwpfc.jpg%23' + Math.random().toString(36).substring(5),
 				success: function(response) {
-					console.log(response);
 					text = response.data.url;
 
 					socket.emit("input", {
@@ -684,7 +707,6 @@ $(function() {
 					console.error(data);
 				}
 			});
-			//text = "http://i.kinja-img.com/gawker-media/image/upload/m5g6imznbymcxkbpwpfc.jpg";
 
 			return;
 		}
