@@ -8,6 +8,7 @@ $(function() {
 		"/connect",
 		"/deop",
 		"/devoice",
+		"/dickbutt",
 		"/disconnect",
 		"/ignore",
 		"/ignorelist",
@@ -650,6 +651,7 @@ $(function() {
 			alert(ignoredNicks.join(", "));
 			return;
 		}
+
 		if (text.indexOf("/ignore") === 0) {
 			var ignoreNick = text.substring(8,text.length);
 
@@ -665,6 +667,10 @@ $(function() {
 			window.localStorage.setItem("ignoredNicks", ignoredNicks.join(' '));
 
 			return;
+		}
+
+		if (text.indexOf("/dickbutt") === 0) {
+			text = "http://i.kinja-img.com/gawker-media/image/upload/m5g6imznbymcxkbpwpfc.jpg";
 		}
 
 		socket.emit("input", {
