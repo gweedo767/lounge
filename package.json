@@ -1,7 +1,7 @@
 {
   "name": "thelounge",
   "description": "The self-hosted Web IRC client",
-  "version": "2.0.0-pre.3",
+  "version": "2.0.0-pre.4",
   "publishConfig": {
     "tag": "next"
   },
@@ -48,7 +48,7 @@
     "event-stream": "3.3.2",
     "express": "4.13.4",
     "fs-extra": "0.30.0",
-    "irc-framework": "2.0.0",
+    "irc-framework": "2.4.0",
     "lodash": "4.11.2",
     "moment": "2.13.0",
     "read": "1.0.7",

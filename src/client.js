@@ -55,6 +55,9 @@ var inputs = [
 }, {});
 
 function Client(manager, name, config) {
+	if (typeof config !== "object") {
+		config = {};
+	}
 	_.merge(this, {
 		activeChannel: -1,
 		config: config,
@@ -67,22 +70,22 @@ function Client(manager, name, config) {
 
 	var client = this;
 
-	if (config) {
-		if (!config.token) {
-			client.updateToken(function() {
-				client.manager.updateUser(client.name, {token: config.token});
-			});
-		}
-
-		var delay = 0;
-		(config.networks || []).forEach(function(n) {
-			setTimeout(function() {
-				client.connect(n);
-			}, delay);
-			delay += 1000;
+	if (client.name && !client.config.token) {
+		client.updateToken(function(token) {
+			client.manager.updateUser(client.name, {token: token});
 		});
+	}
 
-		log.info("User '" + name + "' loaded");
+	var delay = 0;
+	(client.config.networks || []).forEach(function(n) {
+		setTimeout(function() {
+			client.connect(n);
+		}, delay);
+		delay += 1000;
+	});
+
+	if (client.name) {
+		log.info("User '" + client.name + "' loaded");
 	}
 }
 
@@ -90,8 +93,7 @@ Client.prototype.emit = function(event, data) {
 	if (this.sockets !== null) {
 		this.sockets.in(this.id).emit(event, data);
 	}
-	var config = this.config || {};
-	if (config.log === true) {
+	if (this.config.log === true) {
 		if (event === "msg") {
 			var target = this.find(data.chan);
 			if (target) {
@@ -229,6 +231,8 @@ Client.prototype.connect = function(args) {
 		localAddress: config.bind,
 		rejectUnauthorized: false,
 		auto_reconnect: true,
+		auto_reconnect_wait: 10000 + Math.floor(Math.random() * 1000), // If multiple users are connected to the same network, randomize their reconnections a little
+		auto_reconnect_max_retries: 360, // At least one hour (plus timeouts) worth of reconnections
 		webirc: webirc,
 	});
 
@@ -245,17 +249,16 @@ Client.prototype.updateToken = function(callback) {
 	var client = this;
 
 	crypto.randomBytes(48, function(err, buf) {
-		client.config.token = buf.toString("hex");
-		callback();
+		callback(client.config.token = buf.toString("hex"));
 	});
 };
 
 Client.prototype.setPassword = function(hash, callback) {
 	var client = this;
 
-	client.updateToken(function() {
+	client.updateToken(function(token) {
 		client.manager.updateUser(client.name, {
-			token: client.config.token,
+			token: token,
 			password: hash
 		});
 

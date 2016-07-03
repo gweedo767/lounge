@@ -62,7 +62,7 @@ module.exports = function(options) {
 
 	manager.sockets = sockets;
 
-	log.info("The Lounge v" + pkg.version + " is now running on", protocol + "://" + config.host + ":" + config.port + "/");
+	log.info("The Lounge v" + pkg.version + " is now running on", protocol + "://" + (config.host || "*") + ":" + config.port + "/");
 	log.info("Press ctrl-c to stop\n");
 
 	if (!config.public) {
@@ -196,7 +196,7 @@ function init(socket, client) {
 		socket.emit("init", {
 			active: client.activeChannel,
 			networks: client.networks,
-			token: client.config ? client.config.token : null
+			token: client.config.token || null
 		});
 	}
 }
