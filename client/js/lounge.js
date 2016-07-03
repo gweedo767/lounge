@@ -811,7 +811,7 @@ $(function() {
 				return $(this).data("title").toLowerCase() === name;
 			})
 			.first();
-	}
+	});
 	
 	function findCurrentNetworkChan(name) {
 		name = name.toLowerCase();
