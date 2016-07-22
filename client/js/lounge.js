@@ -171,7 +171,7 @@ $(function() {
 			confirmExit();
 
 			if (sidebar.find(".highlight").length) {
-				toggleFaviconNotification(true);
+				toggleNotificationMarkers(true);
 			}
 		}
 
@@ -235,7 +235,7 @@ $(function() {
 		}
 
 		var chan = chat.find(target);
-		var msg;
+		var template = "msg";
 
 		if (!data.msg.highlight && !data.msg.self && (type === "message" || type === "notice") && highlights.some(function(h) {
 			return data.msg.text.indexOf(h) > -1;
@@ -258,10 +258,12 @@ $(function() {
 			"ctcp",
 		].indexOf(type) !== -1) {
 			data.msg.template = "actions/" + type;
-			msg = $(render("msg_action", data.msg));
-		} else {
-			msg = $(render("msg", data.msg));
+			template = "msg_action";
+		} else if (type === "unhandled") {
+			template = "msg_unhandled";
 		}
+
+		var msg = $(render(template, data.msg));
 
 		var text = msg.find(".text");
 		if (text.find("i").size() === 1) {
@@ -298,7 +300,20 @@ $(function() {
 
 	function renderChannelMessages(data) {
 		var documentFragment = buildChannelMessages(data.id, data.messages);
-		chat.find("#chan-" + data.id + " .messages").append(documentFragment);
+		var channel = chat.find("#chan-" + data.id + " .messages").append(documentFragment);
+
+		if (data.firstUnread > 0) {
+			var first = channel.find("#msg-" + data.firstUnread);
+
+			// TODO: If the message is far off in the history, we still need to append the marker into DOM
+			if (!first.length) {
+				channel.prepend(render("unread_marker"));
+			} else {
+				first.before(render("unread_marker"));
+			}
+		} else {
+			channel.append(render("unread_marker"));
+		}
 	}
 
 	function renderChannelUsers(data) {
@@ -329,12 +344,20 @@ $(function() {
 		if(ignoredNicks.indexOf(data.msg.from) >= 0) return;
 
 		var target = "#chan-" + data.chan;
-		chat.find(target + " .messages")
+		var container = chat.find(target + " .messages");
+
+		container
 			.append(msg)
 			.trigger("msg", [
 				target,
 				data.msg
 			]);
+
+		if (data.msg.self) {
+			container
+				.find(".unread-marker")
+				.appendTo(container);
+		}
 	});
 
 	socket.on("more", function(data) {
@@ -386,29 +409,15 @@ $(function() {
 	});
 
 	socket.on("part", function(data) {
-		var id = data.chan;
-		sidebar.find(".chan[data-id='" + id + "']").remove();
-		$("#chan-" + id).remove();
+		var chanMenuItem = sidebar.find(".chan[data-id='" + data.chan + "']");
 
-		var next = null;
-		var highest = -1;
-		chat.find(".chan").each(function() {
-			var self = $(this);
-			var z = parseInt(self.css("z-index"));
-			if (z > highest) {
-				highest = z;
-				next = self;
-			}
-		});
-
-		if (next !== null) {
-			id = next.data("id");
-			sidebar.find("[data-id=" + id + "]").click();
-		} else {
-			sidebar.find(".chan")
-				.eq(0)
-				.click();
+		// When parting from the active channel/query, jump to the network's lobby
+		if (chanMenuItem.hasClass("active")) {
+			chanMenuItem.parent(".network").find(".lobby").click();
 		}
+
+		chanMenuItem.remove();
+		$("#chan-" + data.chan).remove();
 	});
 
 	socket.on("quit", function(data) {
@@ -637,6 +646,22 @@ $(function() {
 
 	var input = $("#input")
 		.history()
+		.on("input keyup", function() {
+			var style = window.getComputedStyle(this);
+
+			// Start by resetting height before computing as scrollHeight does not
+			// decrease when deleting characters
+			this.style.height = this.style.minHeight;
+
+			this.style.height = Math.min(
+				Math.round(window.innerHeight - 100), // prevent overflow
+				this.scrollHeight
+				+ Math.round(parseFloat(style.borderTopWidth) || 0)
+				+ Math.round(parseFloat(style.borderBottomWidth) || 0)
+			) + "px";
+
+			$("#chat .chan.active .chat").trigger("msg.sticky"); // fix growing
+		})
 		.tab(complete, {hint: false});
 
 	//chrome on android isn't submitting keypresses, makes tying to tab complete unique
@@ -876,7 +901,6 @@ $(function() {
 		}
 	}
 
-	var top = 1;
 	sidebar.on("click", ".chan, button", function() {
 		var self = $(this);
 		var target = self.data("target");
@@ -901,24 +925,24 @@ $(function() {
 			.empty();
 
 		if (sidebar.find(".highlight").length === 0) {
-			toggleFaviconNotification(false);
+			toggleNotificationMarkers(false);
 		}
 
 		viewport.removeClass("lt");
-		$("#windows .active")
+		var lastActive = $("#windows > .active");
+
+		lastActive
 			.removeClass("active")
 			.find(".chat")
 			.unsticky();
 
+		lastActive
+			.find(".chan.active")
+			.removeClass("active");
+
 		var chan = $(target)
 			.addClass("active")
-			.trigger("show")
-			.css("z-index", top++);
-
-		var chanChat = chan.find(".chat");
-		if (chanChat.length > 0) {
-			chanChat.sticky();
-		}
+			.trigger("show");
 
 		var title = "The Lounge";
 		if (chan.data("title")) {
@@ -927,7 +951,13 @@ $(function() {
 		document.title = title;
 
 		if (self.hasClass("chan")) {
+			$("#chat-container").addClass("active");
 			setNick(self.closest(".network").data("nick"));
+		}
+
+		var chanChat = chan.find(".chat");
+		if (chanChat.length > 0) {
+			chanChat.sticky();
 		}
 
 		if (chan.data("needsNamesRefresh") === true) {
@@ -1017,7 +1047,7 @@ $(function() {
 				if (options.notification) {
 					pop.play();
 				}
-				toggleFaviconNotification(true);
+				toggleNotificationMarkers(true);
 
 				if (options.desktopNotifications && Notification.permission === "granted") {
 					var title;
@@ -1195,14 +1225,14 @@ $(function() {
 	setInterval(function() {
 		chat.find(".chan:not(.active)").each(function() {
 			var chan = $(this);
-			if (chan.find(".messages").children().slice(0, -100).remove().length) {
+			if (chan.find(".messages .msg:not(.unread-marker)").slice(0, -100).remove().length) {
 				chan.find(".show-more").addClass("show");
 			}
 		});
 	}, 1000 * 10);
 
 	function clear() {
-		chat.find(".active .messages").empty();
+		chat.find(".active .messages .msg:not(.unread-marker)").remove();
 		chat.find(".active .show-more").addClass("show");
 	}
 
@@ -1349,20 +1379,24 @@ $(function() {
 		return array;
 	}
 
-	function toggleFaviconNotification(newState) {
+	function toggleNotificationMarkers(newState) {
+		// Toggles the favicon to red when there are unread notifications
 		if (favicon.data("toggled") !== newState) {
 			var old = favicon.attr("href");
 			favicon.attr("href", favicon.data("other"));
 			favicon.data("other", old);
 			favicon.data("toggled", newState);
 		}
+
+		// Toggles a dot on the menu icon when there are unread notifications
+		$("#viewport .lt").toggleClass("notified", newState);
 	}
 
 	document.addEventListener(
 		"visibilitychange",
 		function() {
 			if (sidebar.find(".highlight").length === 0) {
-				toggleFaviconNotification(false);
+				toggleNotificationMarkers(false);
 			}
 		}
 	);

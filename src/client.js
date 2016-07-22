@@ -13,6 +13,7 @@ module.exports = Client;
 var id = 0;
 var events = [
 	"connection",
+	"unhandled",
 	"ctcp",
 	"error",
 	"invite",
@@ -134,20 +135,41 @@ Client.prototype.find = function(id) {
 };
 
 Client.prototype.connect = function(args) {
-	var config = Helper.getConfig();
+	var config = Helper.config;
 	var client = this;
 
 	var nick = args.nick || "lounge-user";
 	var webirc = null;
 	var channels = [];
 
-	if (args.join) {
-		var join = args.join.replace(/\,/g, " ").split(/\s+/g);
-		join.forEach(function(chan) {
+	if (args.channels) {
+		var badName = false;
+
+		args.channels.forEach(function(chan) {
+			if (!chan.name) {
+				badName = true;
+				return;
+			}
+
 			channels.push(new Chan({
-				name: chan
+				name: chan.name
 			}));
 		});
+
+		if (badName && client.name) {
+			log.warn("User '" + client.name + "' on network '" + args.name + "' has an invalid channel which has been ignored");
+		}
+	// `join` is kept for backwards compatibility when updating from versions <2.0
+	// also used by the "connect" window
+	} else if (args.join) {
+		channels = args.join
+			.replace(/\,/g, " ")
+			.split(/\s+/g)
+			.map(function(chan) {
+				return new Chan({
+					name: chan
+				});
+			});
 	}
 
 	var network = new Network({
@@ -215,10 +237,20 @@ Client.prototype.connect = function(args) {
 	}
 
 	network.irc = new ircFramework.Client();
+
 	network.irc.requestCap([
 		"echo-message",
 		"znc.in/self-message",
 	]);
+
+	events.forEach(function(plugin) {
+		var path = "./plugins/irc-events/" + plugin;
+		require(path).apply(client, [
+			network.irc,
+			network
+		]);
+	});
+
 	network.irc.connect({
 		version: package.name + " " + package.version + " -- " + package.homepage,
 		host: network.host,
@@ -234,14 +266,6 @@ Client.prototype.connect = function(args) {
 		auto_reconnect_wait: 10000 + Math.floor(Math.random() * 1000), // If multiple users are connected to the same network, randomize their reconnections a little
 		auto_reconnect_max_retries: 360, // At least one hour (plus timeouts) worth of reconnections
 		webirc: webirc,
-	});
-
-	events.forEach(function(plugin) {
-		var path = "./plugins/irc-events/" + plugin;
-		require(path).apply(client, [
-			network.irc,
-			network
-		]);
 	});
 };
 
@@ -277,6 +301,14 @@ Client.prototype.setPassword = function(hash, callback) {
 };
 
 Client.prototype.input = function(data) {
+	var client = this;
+	data.text.split("\n").forEach(function(line) {
+		data.text = line;
+		client.inputLine(data);
+	});
+};
+
+Client.prototype.inputLine = function(data) {
 	var client = this;
 	var text = data.text;
 	var target = client.find(data.target);
@@ -330,6 +362,7 @@ Client.prototype.more = function(data) {
 Client.prototype.open = function(data) {
 	var target = this.find(data);
 	if (target) {
+		target.chan.firstUnread = 0;
 		target.chan.unread = 0;
 		target.chan.highlight = false;
 		this.activeChannel = target.chan.id;
@@ -405,9 +438,8 @@ Client.prototype.quit = function() {
 var timer;
 Client.prototype.save = function(force) {
 	var client = this;
-	var config = Helper.getConfig();
 
-	if (config.public) {
+	if (Helper.config.public) {
 		return;
 	}
 

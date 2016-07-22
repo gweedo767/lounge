@@ -209,6 +209,29 @@ button {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+#viewport .lt {
+	position: relative;
+}
+
+/* Notification dot on the top right corner of the menu icon */
+#viewport .lt:after {
+	content: "";
+	position: absolute;
+	top: 9px;
+	right: 7px;
+	background-color: #e74c3c;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	border: 2px solid white;
+	opacity: 0;
+	transition: opacity .2s;
+}
+
+#viewport .lt.notified:after {
+	opacity: 1;
+}
+
 #viewport .rt:before {
 	font: 14px FontAwesome;
 	content: "\f0c0";
@@ -501,10 +524,11 @@ button {
 	border-radius: 2px;
 	bottom: 4px;
 	left: 220px;
-	overflow: hidden;
 	position: absolute;
 	right: 5px;
 	top: 4px;
+	display: flex;
+	flex-direction: column;
 }
 
 .signed-out #main {
@@ -514,13 +538,6 @@ button {
 #header {
 	display: none;
 	height: 40px;
-	position: absolute;
-	top: 0;
-	width: 100%;
-}
-
-#windows {
-	bottom: 48px;
 	position: absolute;
 	top: 0;
 	width: 100%;
@@ -553,8 +570,7 @@ button {
 	border-color: #79838c;
 }
 
-#windows .window:before,
-#windows .chan:before {
+#windows .window:before {
 	background: #f4f4f4;
 	background-image: linear-gradient(#f4f4f4, #ececec);
 	border-bottom: 1px solid #d7d7d7;
@@ -565,7 +581,6 @@ button {
 	z-index: 10;
 }
 
-#windows .chan,
 #windows .window {
 	background: #fff;
 	bottom: 0;
@@ -574,10 +589,6 @@ button {
 	position: absolute;
 	right: 0;
 	top: 0;
-}
-
-#windows .window {
-	bottom: -44px !important;
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
 }
@@ -620,12 +631,32 @@ button {
 	display: none;
 }
 
-#chat {
+#chat-container,
+#chat .chan {
+	position: absolute;
+	top: 0;
+	right: 0;
 	bottom: 0;
 	left: 0;
-	position: absolute;
-	right: 0;
-	top: 0;
+}
+
+#windows #chat-container.active {
+	display: flex;
+	flex-direction: column;
+}
+
+#chat {
+	position: relative;
+	overflow: hidden;
+	flex: 1;
+}
+
+#chat .chan {
+	display: none;
+}
+
+#chat .chan.active {
+	display: block;
 }
 
 #chat,
@@ -634,9 +665,13 @@ button {
 	line-height: 1.4;
 }
 
+#windows #chat .header {
+	display: block;
+}
+
 #chat .chat,
 #chat .sidebar {
-	top: 58px;
+	top: 48px;
 }
 
 #chat .chat {
@@ -679,6 +714,7 @@ button {
 #chat .show-more {
 	display: none;
 	padding: 10px;
+	padding-bottom: 0;
 	width: 100%;
 }
 
@@ -707,8 +743,37 @@ button {
 }
 
 #chat .msg {
-	display: table-row;
 	word-wrap: break-word;
+}
+
+#chat .unread-marker {
+	position: relative;
+	text-align: center;
+	opacity: .5;
+	margin: 0 10px;
+	z-index: 0;
+}
+
+#chat .unread-marker:before {
+	position: absolute;
+	z-index: -1;
+	content: "";
+	left: 0;
+	right: 0;
+	top: 50%;
+	border-top: 1px solid #e74c3c;
+}
+
+#chat .unread-marker-text:before {
+	content: "New messages";
+	background-color: white;
+	color: #e74c3c;
+	padding: 0 10px;
+	font: bold 12px Lato;
+}
+
+#chat .unread-marker:last-child {
+	display: none;
 }
 
 .inline-channel {
@@ -730,7 +795,7 @@ button {
 #chat .time {
 	color: #ddd;
 	text-align: right;
-	width: 46px;
+	max-width: 46px;
 	min-width: 46px;
 }
 
@@ -739,7 +804,7 @@ button {
 	color: #b1c3ce;
 	padding-right: 10px;
 	text-align: right;
-	width: 134px;
+	max-width: 134px;
 	min-width: 134px;
 }
 
@@ -912,6 +977,10 @@ button {
 #chat .channel .highlight .text,
 #chat .channel .highlight .user {
 	color: #f00;
+}
+
+#chat .unhandled .from {
+	color: #eee;
 }
 
 #chat .msg.toggle .time {
@@ -1172,36 +1241,27 @@ button {
 #form {
 	background: #eee;
 	border-top: 1px solid #ddd;
-	bottom: 0;
-	height: 48px;
-	left: 0;
-	position: absolute;
-	right: 0;
+	flex: 0 0 auto;
+	padding: 5px;
 }
 
-#form .inner {
-	bottom: 7px;
-	left: 7px;
-	position: absolute;
-	right: 7px;
-	top: 6px;
-}
-
-#form .input {
+#windows #form .input {
 	font: 12px Consolas, Menlo, Monaco, "Lucida Console", "DejaVu Sans Mono", "Courier New", monospace;
-	left: 0;
-	height: 34px;
-	position: relative;
+	border: 1px solid #ddd;
+	border-radius: 2px;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	align-items: flex-end;
+	min-height: 37px;
 }
 
 #form #nick {
 	background: #f6f6f6;
 	color: #666;
-	position: absolute;
 	font: inherit;
 	font-size: 11px;
 	margin: 5px;
-	margin-right: 10px;
 	line-height: 26px;
 	height: 24px;
 	padding: 0 9px;
@@ -1210,6 +1270,7 @@ button {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	flex: 0 0 auto;
 }
 
 #form #nick:empty {
@@ -1221,24 +1282,28 @@ button {
 }
 
 #form #input {
-	border: 1px solid #ddd;
+	background: transparent;
+	border: none;
 	font: inherit;
-	border-radius: 2px;
-	height: 100%;
+	min-height: 18px; /* Required when computing input height at char deletion */
+	height: 18px;
+	max-height: 18px;
+	line-height: 1.5;
 	outline: none;
-	padding: 0 34px 0 10px;
-	-webkit-appearance: none;
-	width: 100%;
+	margin: 5px;
+	padding: 0;
+	resize: none;
+	flex: 1 0 auto;
+	align-self: center;
 }
 
 #form #submit {
 	color: #9ca5b4;
 	height: 34px;
 	line-height: 34px;
-	position: absolute;
-	right: 0;
 	transition: opacity .3s;
 	width: 34px;
+	flex: 0 0 auto;
 }
 
 #form #upload {
@@ -1246,7 +1311,7 @@ button {
 	height: 34px;
 	line-height: 34px;
 	position: absolute;
-	right: 0;
+	right: 15px;
 	transition: opacity .3s;
 	width: 34px;
 }
@@ -1657,16 +1722,16 @@ button {
 		padding: 2px 0;
 	}
 
-	#chat .msg:last-child {
-		height: auto;
-	}
-
 	#chat .time,
 	#chat .from,
 	#chat .text {
 		border: 0;
 		display: inline;
 		padding: 0;
+	}
+
+	#chat .unread-marker {
+		margin: 0;
 	}
 }
 

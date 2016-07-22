@@ -145,9 +145,9 @@ body {
 	border-color: #242a33;
 }
 
-#form #input {
-	background-color: #2e3642;
-	border-color: #242a33;
+#form .input {
+	background-color: #2e3642 !important;
+	border-color: #242a33 !important;
 	color: #ccc;
 }
 
@@ -175,6 +175,19 @@ body {
 	color: #99a2b4;
 }
 
+/* Notification dot on the top right corner of the menu icon */
+#viewport .lt:after {
+	border-color: #333c4a;
+}
+
+#chat .unread-marker {
+	opacity: 1;
+}
+
+#chat .unread-marker-text:before {
+	background-color: #333c4a;
+}
+
 /* Setup text colors */
 #chat .msg {
 	color: #f3f3f3;
@@ -193,6 +206,10 @@ body {
 #chat .channel .highlight,
 #chat .channel .highlight .from {
 	color: #f92772;
+}
+
+#chat .unhandled .from {
+	color: #99a2b4;
 }
 
 #chat .msg.quit .time,
