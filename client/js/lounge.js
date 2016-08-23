@@ -217,7 +217,7 @@ $(function() {
 		var template = "msg";
 
 		if (!data.msg.highlight && !data.msg.self && (type === "message" || type === "notice") && highlights.some(function(h) {
-			return data.msg.text.indexOf(h) > -1;
+			return data.msg.text.toLocaleLowerCase().indexOf(h.toLocaleLowerCase()) > -1;
 		})) {
 			data.msg.highlight = true;
 		}
@@ -647,6 +647,10 @@ $(function() {
 		return false;
 	});
 
+	function resetInputHeight(input) {
+		input.style.height = input.style.minHeight;
+	}
+
 	var input = $("#input")
 		.history()
 		.on("input keyup", function() {
@@ -654,7 +658,7 @@ $(function() {
 
 			// Start by resetting height before computing as scrollHeight does not
 			// decrease when deleting characters
-			this.style.height = this.style.minHeight;
+			resetInputHeight(this);
 
 			this.style.height = Math.min(
 				Math.round(window.innerHeight - 100), // prevent overflow
@@ -683,7 +687,9 @@ $(function() {
 		}
 
 		input.val("");
+
 		$("#mobileAutoCompleteHolder").html("");
+		resetInputHeight(input.get(0));
 
 		if (text.indexOf("/clear") === 0) {
 			clear();

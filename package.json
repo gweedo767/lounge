@@ -1,7 +1,7 @@
 {
   "name": "thelounge",
   "description": "The self-hosted Web IRC client",
-  "version": "2.0.0-pre.4",
+  "version": "2.0.0-pre.6",
   "publishConfig": {
     "tag": "next"
   },
@@ -52,12 +52,13 @@
     "lodash": "4.11.2",
     "moment": "2.13.0",
     "read": "1.0.7",
-    "request": "2.72.0",
+    "request": "2.74.0",
     "semver": "5.1.0",
     "sequelize": "^3.23.2",
     "socket.io": "1.4.5",
     "spdy": "3.3.2",
-    "sqlite3": "^3.1.4"
+    "sqlite3": "^3.1.4",
+    "ldapjs": "1.0.0"
   },
   "devDependencies": {
     "chai": "3.5.0",

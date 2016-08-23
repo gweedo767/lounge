@@ -121,12 +121,16 @@ a:hover,
 	font: bold 12px Inconsolata-g, monospace;
 }
 
-#form .input {
+#windows #form .input {
 	font: 12px Inconsolata-g, monospace;
 }
 
 #footer .icon {
 	color: #666;
+}
+
+.tooltipped:after {
+	font-family: Inconsolata-g, monospace;
 }
 
 @media (max-width: 768px) {

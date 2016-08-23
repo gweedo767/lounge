@@ -346,9 +346,12 @@ button {
 	opacity: 1;
 }
 
+#viewport .rt-tooltip {
+	float: right;
+}
+
 #viewport .rt {
 	display: block;
-	float: right;
 	margin: 6px -12px 0 0;
 }
 
@@ -548,10 +551,10 @@ button {
 	background: rgba(0, 0, 0, .06);
 	border-radius: 2px;
 	bottom: 4px;
-	height: 48px;
+	height: 45px;
 	left: 5px;
 	font-size: 14px;
-	line-height: 48px;
+	line-height: 45px;
 	position: absolute;
 	text-align: center;
 	width: 210px;
@@ -812,6 +815,7 @@ button {
 
 #chat .msg {
 	word-wrap: break-word;
+	word-break: break-word; /* Webkit-specific */
 }
 
 #chat .unread-marker {
@@ -1248,7 +1252,6 @@ button {
 	padding: 0;
 	display: flex;
 	align-items: flex-end;
-	min-height: 37px;
 }
 
 #form #nick {
@@ -1256,7 +1259,7 @@ button {
 	color: #666;
 	font: inherit;
 	font-size: 11px;
-	margin: 5px;
+	margin: 4px;
 	line-height: 26px;
 	height: 24px;
 	padding: 0 9px;
@@ -1295,9 +1298,9 @@ button {
 #form #submit {
 	color: #9ca5b4;
 	font-size: 14px;
-	height: 34px;
+	height: 32px;
 	transition: opacity .2s;
-	width: 34px;
+	width: 32px;
 	flex: 0 0 auto;
 }
 
@@ -1392,9 +1395,9 @@ button {
 	visibility: hidden;
 	opacity: 0;
 	padding: 5px 8px;
-	font-size: 12px;
+	font: 12px Lato;
 	line-height: 1.2;
-	color: #262c36;
+	color: #fff;
 	text-align: center;
 	text-decoration: none;
 	text-shadow: none;
@@ -1404,7 +1407,7 @@ button {
 	white-space: pre;
 	pointer-events: none;
 	content: attr(aria-label);
-	background: #fff;
+	background: #222;
 	border-radius: 3px;
 	-webkit-font-smoothing: subpixel-antialiased;
 	transition: .2s;
@@ -1418,7 +1421,7 @@ button {
 	opacity: 0;
 	width: 0;
 	height: 0;
-	color: #262c36;
+	color: #fff;
 	pointer-events: none;
 	content: "";
 	border: 5px solid transparent;
@@ -1451,7 +1454,7 @@ button {
 	right: 50%;
 	bottom: -5px;
 	margin-right: -5px;
-	border-bottom-color: #fff;
+	border-bottom-color: #222;
 }
 
 .tooltipped-se:after {
@@ -1479,7 +1482,7 @@ button {
 	right: 50%;
 	bottom: auto;
 	margin-right: -5px;
-	border-top-color: #fff;
+	border-top-color: #222;
 }
 
 .tooltipped-ne:after {
@@ -1513,7 +1516,7 @@ button {
 	bottom: 50%;
 	left: -5px;
 	margin-top: -5px;
-	border-left-color: #fff;
+	border-left-color: #222;
 }
 
 .tooltipped-e:after {
@@ -1530,8 +1533,10 @@ button {
 	right: -5px;
 	bottom: 50%;
 	margin-top: -5px;
-	border-right-color: #fff;
+	border-right-color: #222;
 }
+
+/* End tooltips */
 
 /**
   * IRC Message Styling

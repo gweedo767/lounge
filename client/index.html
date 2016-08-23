@@ -58,6 +58,7 @@
 					<div id="chat"></div>
 					<form id="form" method="post" action="">
 						<div class="input">
+
 							<button id="upload" type="button" title="Upload" aria-label="Upload image" data-toggle="modal" data-target="#uploadModal"></button>
 							<textarea id="input" class="mousetrap" placeholder="Enter message"></textarea>
 						</div>
@@ -290,7 +291,7 @@
 								</label>
 							</div>
 
-							<% if (!public) { %>
+							<% if (!public  && !ldap.enable) { %>
 							<div id="change-password">
 								<form action="" method="post">
 									<div class="col-sm-12">
