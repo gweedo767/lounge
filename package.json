@@ -53,8 +53,10 @@
     "read": "1.0.7",
     "request": "2.74.0",
     "semver": "5.1.0",
+    "sequelize": "^3.23.2",
     "socket.io": "1.4.5",
     "spdy": "3.3.2",
+    "sqlite3": "^3.1.4",
     "ldapjs": "1.0.0"
   },
   "devDependencies": {

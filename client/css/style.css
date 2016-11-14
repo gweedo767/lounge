@@ -1350,7 +1350,7 @@ button {
 	font: inherit;
 	min-height: 18px; /* Required when computing input height at char deletion */
 	height: 18px;
-	max-height: 90px;
+	max-height: 18px;
 	line-height: 1.5;
 	outline: none;
 	margin: 5px;
@@ -1369,6 +1369,30 @@ button {
 	width: 32px;
 	-webkit-flex: 0 0 auto;
 	flex: 0 0 auto;
+}
+
+#form #upload {
+	color: #9ca5b4;
+	height: 34px;
+	line-height: 34px;
+	position: absolute;
+	right: 15px;
+	transition: opacity .3s;
+	width: 34px;
+}
+
+#form #submit:before {
+	font: 14px FontAwesome;
+	content: "\f1d8";
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+#form #upload:before {
+	font: 14px FontAwesome;
+	content: "\f0ee";
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 #form #submit:hover {
@@ -1719,6 +1743,15 @@ button {
 
 	#chat .title:before {
 		display: none;
+	}
+
+	#mobileAutoCompleteHolder {
+		position: relative;
+		top: -80px;
+		z-index: 1000;
+		overflow-x: auto;
+		width: 100%;
+		white-space: nowrap;
 	}
 }
 

@@ -13,6 +13,8 @@ $(function() {
 		"/dickbutt",
 		"/dickbuttstats",
 		"/disconnect",
+		"/ignore",
+		"/ignorelist",
 		"/invite",
 		"/join",
 		"/kick",
@@ -34,6 +36,15 @@ $(function() {
 		"/voice",
 		"/whois"
 	];
+
+	var ignoredNicks = [];
+
+	//load ignoredNicks from local storage
+	var storedIgnoredNicks = window.localStorage.getItem("ignoredNicks");
+	if(storedIgnoredNicks !== null && storedIgnoredNicks !== undefined) {
+		ignoredNicks = window.localStorage.getItem("ignoredNicks").split(' ');
+		console.log('ignored nicks are', ignoredNicks);
+	}
 
 	var sidebar = $("#sidebar, #footer");
 	var chat = $("#chat");
@@ -361,6 +372,9 @@ $(function() {
 
 	socket.on("msg", function(data) {
 		var msg = buildChatMessage(data);
+
+		if(ignoredNicks.indexOf(data.msg.from) >= 0) return;
+
 		var target = "#chan-" + data.chan;
 		var container = chat.find(target + " .messages");
 
@@ -700,10 +714,34 @@ $(function() {
 		}
 
 		input.val("");
+
+		$("#mobileAutoCompleteHolder").html("");
 		resetInputHeight(input.get(0));
 
 		if (text.indexOf("/clear") === 0) {
 			clear();
+			return;
+		}
+
+		if (text.indexOf("/ignorelist") === 0) {
+			alert(ignoredNicks.join(", "));
+			return;
+		}
+
+		if (text.indexOf("/ignore") === 0) {
+			var ignoreNick = text.substring(8,text.length);
+
+			if(ignoredNicks.indexOf(ignoreNick) >= 0) {
+				//stop ignoring the nick
+				ignoredNicks.splice(ignoredNicks.indexOf(ignoreNick),1);
+			} else {
+				//ignore this nick
+				ignoredNicks.push(ignoreNick);
+			}
+
+			//store the new ignore cookie
+			window.localStorage.setItem("ignoredNicks", ignoredNicks.join(' '));
+
 			return;
 		}
 
@@ -752,6 +790,88 @@ $(function() {
 			target: chat.data("id"),
 			text: text
 		});
+	});
+
+	$("#localImage").change(function() {
+		var reader = new FileReader();
+                reader.onload = function(e) {
+			$("#localImage").hide();
+
+			//show uploading message
+			$("#imageUploading").show();
+			$("#uploadError").hide();
+
+			var data = e.target.result.substr(e.target.result.indexOf(",") + 1, e.target.result.length);
+			$("#image_preview").attr("src", e.target.result);
+			$.ajax({
+				url: 'https://api.imgur.com/3/image',
+				headers: {
+					'Authorization': 'Client-ID 43fc3f4729d7cf9'
+				},
+				type: 'POST',
+				data: {
+					'image': data,
+					'type': 'base64'
+				},
+				success: function(response) {
+					$("#imageUploading").hide();
+					$("#imageUploaded").show();
+					$("#imgurLink").html(response.data.link);
+					$("#imgurUploadOut").attr('src',response.data.link);
+				}, error: function(data) {
+					$("#imageUploading").hide();
+					$("#uploadError").show();
+					console.error(data);
+				}
+			});
+                };
+                reader.readAsDataURL(this.files[0]);
+	});
+
+	$("#shareUploadedImage").on("click", function() {
+		//share current imgur image
+		$("#input").val($("#imgurLink").html());
+		$("#imageUploading").hide();
+		$("#imageUploaded").hide();
+		$("#uploadError").hide();
+		$("#localImage").show();
+	});
+
+	$("#dontShareUploadedImage").on("click", function() {
+                $("#imageUploading").hide();
+                $("#imageUploaded").hide();
+                $("#uploadError").hide();
+                $("#localImage").show();
+	});
+
+	$("#mobileAutoCompleteHolder").on("click", ".autoCompleteButton", function() {
+		var term = $(this).attr("completeterm");
+		console.log(term);
+		//$("#input").val($("#input").val() + term);
+		console.log("current val:", $("#input").val());
+		var words = $("#input").val().split(" ");
+		console.log("words",words);
+		words.pop(); //remove word we are completing
+
+		if(words.length > 0) {
+			term = " " + term + " ";
+		}
+
+		$("#input").val(words.join(" ") + term);
+
+		$("#input").focus();
+		$("#mobileAutoCompleteHolder").html("");
+	});
+
+	chat.on("click", ".inline-channel", function() {
+		var chan = $(".network")
+			.find(".chan.active")
+			.parent(".network")
+			.find(".chan")
+			.filter(function() {
+				return $(this).data("title").toLowerCase() === name;
+			})
+			.first();
 	});
 
 	function findCurrentNetworkChan(name) {
@@ -973,6 +1093,18 @@ $(function() {
 			opacity: 0.4
 		});
 		return false;
+	});
+
+	sidebar.on("click", ".networkCollapse", function() {
+		var parent = $(this).parent().parent().parent();
+		$(parent).find(".channel").fadeToggle();
+		if($(this).hasClass("glyphicon-minus")) {
+			$(this).removeClass("glyphicon-minus");
+			$(this).addClass("glyphicon-plus");
+		} else {
+			$(this).removeClass("glyphicon-plus");
+			$(this).addClass("glyphicon-minus");
+		}
 	});
 
 	contextMenu.on("click", ".context-menu-item", function() {
@@ -1235,7 +1367,6 @@ $(function() {
 					words.push(self.data("title"));
 				}
 			});
-
 		var returnVal = $.grep(
 			words,
 			function(w) {
@@ -1247,6 +1378,17 @@ $(function() {
 			if (input.val() === word && nicks.indexOf(returnVal[i]) >= 0) {
 				returnVal[i] = returnVal[i] + ": ";
 			}
+		}
+
+		if(returnVal.length > 0) {
+			//build mobile auto complete selector
+			var buttonHtml = "";
+			for(var i=0; i<returnVal.length; i++) {
+				buttonHtml += '<button type="button" class="btn btn-primary btn-sm autoCompleteButton" completeTerm="' + returnVal[i] + '">' + returnVal[i] + '</button> '
+			}
+			$("#mobileAutoCompleteHolder").html(buttonHtml);
+		} else {
+			$("#mobileAutoCompleteHolder").html("");
 		}
 
 		return returnVal;

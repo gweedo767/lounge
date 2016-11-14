@@ -32,7 +32,8 @@ function Network(attr) {
 	this.channels.unshift(
 		new Chan({
 			name: this.name,
-			type: Chan.Type.LOBBY
+			type: Chan.Type.LOBBY,
+			isLobby: true
 		})
 	);
 }

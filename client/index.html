@@ -13,7 +13,7 @@
 
 	<title>The Lounge</title>
 
-	<link rel="stylesheet" href="css/bootstrap.css">
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 	<link rel="stylesheet" href="css/style.css">
 	<link id="theme" rel="stylesheet" href="<%= theme %>">
 	<style id="user-specified-css"></style>
@@ -24,7 +24,6 @@
 
 	</head>
 	<body class="signed-out <%= public ? "public" : "" %>">
-
 	<div id="wrap">
 	<div id="viewport">
 		<aside id="sidebar">
@@ -369,11 +368,45 @@
 	</div>
 	</div>
 
+	<div id="uploadModal" class="modal fade" role="dialog">
+
+		<!-- imgur upload modal -->
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Upload image to imgur</h4>
+				</div>
+				<div class="modal-body">
+					<input type="file" id="localImage">
+					<div id="imageUploading" style="display: none;">
+						Image is currently uploading. Please wait.
+					</div>
+					<div id="imageUploaded" style="display: none;">
+						Image upload complete<br>
+						<img id="imgurUploadOut" width="100"><br>
+						<p id="imgurLink"></p>
+						<button type="button" class="btn btn-default" id="shareUploadedImage" data-dismiss="modal">Post Image</button>
+						<button type="button" class="btn btn-default" id="dontShareUploadedImage" data-dismiss="modal">Don't Post</button>
+					</div>
+					<div id="uploadError" style="display: none;">
+						There was an error uploading your file.  Please try again.
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div id="context-menu-container">
 		<ul id="context-menu"></ul>
 	</div>
 
 	<script src="socket.io/socket.io.js"></script>
+	<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 	<script src="js/libs.min.js"></script>
 	<script src="js/lounge.templates.js"></script>
 	<script src="js/lounge.js"></script>
